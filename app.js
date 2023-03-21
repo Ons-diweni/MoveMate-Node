@@ -12,9 +12,14 @@ mongoose.connect(process.env.URL,{ useNewUrlParser: true, useUnifiedTopology: tr
 
 
 
+//middleware to handle incoming HTTP requests that contain JSON-encoded data in the request body
 app.use(express.json());
+//middleware to handle HTTP requests containing URL-encoded data.
 app.use(express.urlencoded({ extended: false }));
+//middleware to serve static files
 app.use(express.static(path.join(__dirname, 'public')));
+
+
 
 
 app.use('/user',userRouter)
