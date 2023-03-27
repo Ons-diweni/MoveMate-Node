@@ -2,14 +2,13 @@ require('dotenv').config();
 const express = require ('express')
 var path = require('path');
 const app = express ()
-const mongoose = require('mongoose')
-const userRouter = require ('./routes/userRoutes')
+const os = require ('os')
+const {dbConnection} = require('./config/dbConnection')
+
+
 
 // database connection
-mongoose.connect(process.env.URL,{ useNewUrlParser: true, useUnifiedTopology: true })
-.then(()=> {console.log('Successfully connected to the database')})
-.catch((err)=>{ console.log('Error connecting to the database',err)})
-
+dbConnection()
 
 
 //middleware to handle incoming HTTP requests that contain JSON-encoded data in the request body
@@ -20,10 +19,13 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 
+//Routes configuration
+app.use('/user', require ('./routes/userRoutes'))
 
 
-app.use('/user',userRouter)
 app.get('/greeting', (req, res) => { res.send('Hello form MoveMate Api')})
+
+
 
 
 module.exports = app ;
