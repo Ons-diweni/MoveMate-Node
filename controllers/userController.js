@@ -17,7 +17,7 @@ exports.register = asyncHandler(async (req, res) => {
       return res.json ({error: 'Required fields are missing'});
     }
     //check if user exists
-    const userFetched = await User.findOne ({cin});
+    const userFetched = await User.findOne ({ $or: [ { cin }, { email }]});
     if (userFetched) {
       res.status (400);
       return res.json ({error: 'User already exists'});
@@ -30,7 +30,7 @@ exports.register = asyncHandler(async (req, res) => {
     const newUser = await User.create({username , email , password : hashedPassword , cin})
 
     if(newUser) {
-      res.status(201).json(newUser)
+      res.status(201).json({user : newUser , message : 'User with cin' + newUser.cin + ' added successfully'})
     } else {
       res.status(400).json({error : 'Error while persisting user in the database'})
     }
@@ -41,27 +41,3 @@ exports.register = asyncHandler(async (req, res) => {
 });
 
 
-
-//          Add a user
-exports.add = async (req, res, next) => {
-  console.log (req.body);
-  if (Object.keys (req.body).length !== 0) {
-    const user = new User ({...req.body});
-    await user
-      .save ()
-      .then (data => {
-        res.send ({
-          message: 'User with id ' + data._id + ' added successfully',
-        });
-      })
-      .catch (err => {
-        res.send ({
-          message: 'Some error occurred while creating a user',
-          error: err,
-        });
-      });
-  } else {
-    res.status (400).send ({message: 'No data provided to persist'});
-    return;
-  }
-};
