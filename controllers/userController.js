@@ -8,6 +8,8 @@ const asyncHandler = require ('express-async-handler');
 
 //              registration
 exports.register = asyncHandler(async (req, res) => {
+
+  if (Object.keys(req.body).length === 0) res.status(400).json({error : 'No data provided'})
   try {
     const {username, password, email, cin} = req.body;
     if (!cin || !password || !email) {
