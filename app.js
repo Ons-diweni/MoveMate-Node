@@ -3,8 +3,8 @@ const express = require ('express')
 var path = require('path');
 const app = express ()
 const os = require ('os')
-const {dbConnection} = require('./config/dbConnection')
-
+const {dbConnection} = require('./config/dbConnection');
+const { errorHandler } = require('./middlewares/errorMiddleware');
 
 
 // database connection
@@ -21,11 +21,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 //Routes configuration
 app.use('/user', require ('./routes/userRoutes'))
-
-
 app.get('/greeting', (req, res) => { res.send('Hello form MoveMate Api')})
 
 
+//Error Middleware
+app.use(errorHandler)
 
 
 module.exports = app ;

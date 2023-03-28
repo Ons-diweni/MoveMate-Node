@@ -13,4 +13,4 @@ exports.dbConnection = async () => {
     console.log ('Error connecting to the database' + err);
     process.exit(1)
   }
-};
+}

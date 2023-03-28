@@ -9,8 +9,8 @@ const asyncHandler = require ('express-async-handler');
 //              registration
 exports.register = asyncHandler(async (req, res) => {
 
-  if (Object.keys(req.body).length === 0) res.status(400).json({error : 'No data provided'})
-  try {
+  if (Object.keys(req.body).length === 0) return res.status(400).json({error : 'No data provided'})
+   try { 
     const {username, password, email, cin} = req.body;
     if (!cin || !password || !email) {
       res.status (400); //Bad request
@@ -34,10 +34,10 @@ exports.register = asyncHandler(async (req, res) => {
     } else {
       res.status(400).json({error : 'Error while persisting user in the database'})
     }
-  } catch (err) {
+     } catch (err) {
     // Handle any unexpected errors here
     res.status(500).json({error: 'Unexpected error occurred while registering user'})
-  }
+  } 
 });
 
 
