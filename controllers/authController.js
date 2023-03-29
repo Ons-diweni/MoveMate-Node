@@ -54,7 +54,7 @@ exports.register = asyncHandler(async (req, res) => {
 //              Login
 exports.login = asyncHandler (async (req , res) => {
 
-  console.log(req.rateLimit.remaining);
+ // console.log(req.rateLimit.remaining);
    //Check if the user has reached the threshold of unsuccessful login attempts.
 if (req.rateLimit.remaining === 0) { return res.status(429).send(ERRORS.TOO_MANY_LOGIN_ATTEMPTS);}
 
