@@ -6,7 +6,7 @@ const signUpSchemaValidator = require ('../middlewares/signUpValidator')
 
 
 //router.post("/add" , authController.add)
-router.post("/register"  ,authController.register)
+router.post("/register" ,signUpSchemaValidator ,authController.register)
 router.post("/login" , loginLimiter , authController.login)
 
 
