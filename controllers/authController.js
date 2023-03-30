@@ -3,6 +3,7 @@ const User = require ('../models/user');
 const jwt = require ('jsonwebtoken');
 const bcrypt = require ('bcryptjs');
 const asyncHandler = require ('express-async-handler');
+const {rateLimiter} = require ('../middlewares/loginRateLimiter')
 
 
 const ERRORS = {
@@ -54,40 +55,26 @@ exports.register = asyncHandler(async (req, res) => {
 //              Login
 exports.login = asyncHandler (async (req , res) => {
 
- // console.log(req.rateLimit.remaining);
-   //Check if the user has reached the threshold of unsuccessful login attempts.
-if (req.rateLimit.remaining === 0) { return res.status(429).send(ERRORS.TOO_MANY_LOGIN_ATTEMPTS);}
-
+  // Check if request body is empty
 if (Object.keys(req.body).length === 0) return res.status(400).json({error : ERRORS.REQUIRED_FIELDS_MISSING})
 
+// Extract email and password from request body
 const {email , password} = req.body
 
-// Exclude password and cin from user object
+// Find user by email
 const user = await User.findOne({email});
 
+// Check if user exists and password is correct
 if(!user) {
-  // req.rateLimit.increment();
-  --req.rateLimit.remaining
-   res.status(401).json({error : ERRORS.INVALID_EMAIL_OR_PASSWORD});
-  }
-
-if(!(await bcrypt.compare(password , user.password))) 
-  {//req.rateLimit.increment();
-  console.log(req.rateLimit.remaining);
-  --req.rateLimit.remaining
-  console.log(req.rateLimit.remaining);
-  return res.status(401).json({error :ERRORS.INVALID_EMAIL_OR_PASSWORD})}
-
-else  {
-
-  //resets the rate limit 
-  //req.rateLimit.resetKey(req.ip);
-  req.rateLimit.remaining = 4;
-  //req.rateLimit.resetKey(req.ip);
-  // Exclude password and cin from user object
-  //const {password , cin , ...data} = user.toObject();
+  res.status(401).json({error : ERRORS.INVALID_EMAIL_OR_PASSWORD});
+} else if(!(await bcrypt.compare(password , user.password))) {
+  res.status(401).json({error :ERRORS.INVALID_EMAIL_OR_PASSWORD})
+} else {
+  // Authentication successful
+  rateLimiter.delete(req.ip); // Reset rate limiter for client IP address
   const {username , email } = user;
-  res.status(200).json({ data : {username , email} , message : 'Login Successfully'}) ;}
+  res.status(200).json({ data : {username , email} , message : 'Login Successfully'}) ;
+}
 
 })
 
