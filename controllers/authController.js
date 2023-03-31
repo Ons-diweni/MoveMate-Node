@@ -6,6 +6,7 @@ const asyncHandler = require ('express-async-handler');
 const {rateLimiter} = require ('../middlewares/loginRateLimiter')
 
 
+
 const ERRORS = {
   NO_DATA_PROVIDED: 'No data provided',
   REQUIRED_FIELDS_MISSING: 'Required fields are missing',
@@ -72,8 +73,12 @@ if(!user) {
 } else {
   // Authentication successful
   rateLimiter.delete(req.ip); // Reset rate limiter for client IP address
+  // Generate a JWT token with user ID and email as payload
+  const token = jwt.sign({ userId: user._id, email: user.email }, process.env.ACCESS_TOKEN_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN,
+  });
   const {username , email } = user;
-  res.status(200).json({ data : {username , email} , message : 'Login Successfully'}) ;
+  res.status(200).json({ data : {username , email , token } , message : 'Login Successfully'}) ;
 }
 
 })
