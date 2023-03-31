@@ -4,17 +4,7 @@ const jwt = require ('jsonwebtoken');
 const bcrypt = require ('bcryptjs');
 const asyncHandler = require ('express-async-handler');
 const {rateLimiter} = require ('../middlewares/loginRateLimiter')
-
-
-
-const ERRORS = {
-  NO_DATA_PROVIDED: 'No data provided',
-  REQUIRED_FIELDS_MISSING: 'Required fields are missing',
-  USER_ALREADY_EXISTS: 'User already exists',
-  INVALID_EMAIL_OR_PASSWORD: 'Invalid email or password',
-  TOO_MANY_LOGIN_ATTEMPTS: 'Too many login attempts, please try again later.',
-  INTERNAL_SERVER_ERROR: 'Unexpected error occurred while logging in user'
-};
+const { ERRORS } = require('../utils/errors');
 
 
 //              registration
@@ -83,3 +73,12 @@ if(!user) {
 
 })
 
+
+//            validation
+
+exports.validater = (req , res ) => {
+  
+  try { res.json({message :' Hey you are authentified'})}
+  catch (err) { res.json({err})}
+  
+}
